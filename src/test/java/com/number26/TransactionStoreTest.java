@@ -1,8 +1,12 @@
 package com.number26;
 
+import com.sun.media.sound.InvalidDataException;
 import org.junit.Test;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -11,14 +15,25 @@ import static org.junit.Assert.assertTrue;
 
 public class TransactionStoreTest {
 
+    @Test(expected=NullPointerException.class)
+    public void testGetTransactionByIdThrowsNuppPointerExceptionForNullParameters(){
+        new TransactionStore().getTransactionById(null);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testGetTransactionByTypeThrowsNuppPointerExceptionForNullParameters(){
+        new TransactionStore().getTransactionByType(null);
+    }
+
     @Test
     public void testEmptyTransactionStoreReturnsEmptyList(){
 
         assertTrue("Empty store did not return and empty list", new TransactionStore().getTransactionByType("").isEmpty());
+        assertTrue("Empty store did not return null", new TransactionStore().getTransactionById(0L) == null);
     }
 
     @Test
-    public void testStoreCanHoldTransactionsByType(){
+    public void testStoreCanHoldTransactionsByType() throws InvalidDataException {
         TransactionStore transactionStore = new TransactionStore();
         Transaction firstTransaction = new Transaction();
         Transaction secondTransaction = new Transaction();
@@ -32,8 +47,68 @@ public class TransactionStoreTest {
         transactionStore.storeTransaction(firstTransaction);
         transactionStore.storeTransaction(secondTransaction);
 
-        assertEquals("Store did not hold the first transaction", 1, transactionStore.getTransactionByType("first"));
-        assertEquals("Store did not hold the second transaction", 2, transactionStore.getTransactionByType("second"));
+        assertTrue("Store did not hold the first transaction by type", transactionStore.getTransactionByType("first").contains(1L));
+        assertTrue("Store did not hold the second transaction by type", transactionStore.getTransactionByType("second").contains(2L));
+
+    }
+
+    @Test
+    public void testStoreCanHoldTransactionsById() throws InvalidDataException {
+        TransactionStore transactionStore = new TransactionStore();
+        Transaction firstTransaction = new Transaction();
+        Transaction secondTransaction = new Transaction();
+
+        firstTransaction.setId(1);
+        firstTransaction.setType("first");
+
+        secondTransaction.setId(2);
+        secondTransaction.setType("second");
+
+        transactionStore.storeTransaction(firstTransaction);
+        transactionStore.storeTransaction(secondTransaction);
+
+        assertTrue("Store did not hold the first transaction by id", transactionStore.getTransactionByType("first").contains(1L));
+        assertTrue("Store did not hold the second transaction by id", transactionStore.getTransactionByType("second").contains(2L));
+
+    }
+
+
+    @Test(expected = InvalidDataException.class)
+    public void testStoreThrowsExceptionWhenTryingToLoadTheSameIdTwice() throws InvalidDataException {
+
+        TransactionStore transactionStore = new TransactionStore();
+        Transaction firstTransaction = new Transaction();
+        Transaction secondTransaction = new Transaction();
+
+        firstTransaction.setId(1);
+        firstTransaction.setType("first");
+
+        secondTransaction.setId(1);
+        secondTransaction.setType("second");
+
+        transactionStore.storeTransaction(firstTransaction);
+        transactionStore.storeTransaction(secondTransaction);
+    }
+
+    @Test()
+    public void testStoreHoldsNullTradeTypeAsEmptyString() throws InvalidDataException {
+
+        TransactionStore transactionStore = new TransactionStore();
+        Transaction firstTransaction = new Transaction();
+        Transaction secondTransaction = new Transaction();
+
+        firstTransaction.setId(1);
+        firstTransaction.setType(null);
+
+        secondTransaction.setId(2);
+        secondTransaction.setType("");
+
+        transactionStore.storeTransaction(firstTransaction);
+        transactionStore.storeTransaction(secondTransaction);
+
+        assertTrue("Store did not hold the first transaction by id", transactionStore.getTransactionByType(null).contains(1L));
+        assertTrue("Store did not hold the first transaction by id", transactionStore.getTransactionByType("").contains(2L));
+
 
     }
 }
