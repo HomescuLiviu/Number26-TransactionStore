@@ -3,10 +3,8 @@ package com.number26;
 import com.sun.media.sound.InvalidDataException;
 import org.junit.Test;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -106,9 +104,11 @@ public class TransactionStoreTest {
         transactionStore.storeTransaction(firstTransaction);
         transactionStore.storeTransaction(secondTransaction);
 
-        assertTrue("Store did not hold the first transaction by id", transactionStore.getTransactionByType(null).contains(1L));
-        assertTrue("Store did not hold the first transaction by id", transactionStore.getTransactionByType("").contains(2L));
+        assertNotNull("Store did not hold the transaction with null type", transactionStore.getTransactionById(1L));
+        assertNotNull("Store did not hold the transaction with empty string type", transactionStore.getTransactionById(2L));
 
+        assertEquals("Store did not hold empty string type for the transaction with null type", "", transactionStore.getTransactionById(1L).getType());
+        assertEquals("Store did not hold empty string type for the transaction with empty string type", "", transactionStore.getTransactionById(2L).getType());
 
     }
 }
