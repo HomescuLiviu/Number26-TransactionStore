@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class TransactionStore {
 
-    private ConcurrentHashMap<Long, Transaction> store = new ConcurrentHashMap<Long, Transaction>();
+    private ConcurrentHashMap<Long, Transaction> store = new ConcurrentHashMap<>();
 
     public List<String> getTransactionByType(String type){
         return store.values()

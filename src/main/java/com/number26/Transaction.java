@@ -2,9 +2,7 @@ package com.number26;
 
 import java.math.BigDecimal;
 
-/**
- * Created by liviu on 2/5/2016.
- */
+
 public class Transaction {
 
     private long id;
