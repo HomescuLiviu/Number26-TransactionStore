@@ -9,47 +9,35 @@ public class Transaction {
 
     private long id;
     private String type;
-    private long parentId;
+    private Long parentId;
     private BigDecimal amount;
     private BigDecimal totalAmount;
 
-    public long getId() {
-        return id;
+    public Transaction(long id, String type, Long parentId, BigDecimal amount, BigDecimal totalAmount) {
+        this.id = id;
+        this.type = type;
+        this.parentId = parentId;
+        this.amount = amount;
+        this.totalAmount = totalAmount;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public long getId() {
+        return id;
     }
 
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type == null ? "" : type;
-    }
-
     public long getParentId() {
         return parentId;
-    }
-
-    public void setParentId(long parentId) {
-        this.parentId = parentId;
     }
 
     public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
+    public synchronized void addTotalAmount(BigDecimal amountToAdd) {
+        this.totalAmount = totalAmount.add(amountToAdd);
     }
 }
