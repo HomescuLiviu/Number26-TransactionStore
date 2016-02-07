@@ -95,7 +95,7 @@ public class TransactionServiceServlet extends HttpServlet {
         if (parentIdString == null || parentIdString.isEmpty()) return true;
         try {
             Long.valueOf(parentIdString);
-        } catch (IllegalArgumentException iae){
+        } catch (NumberFormatException iae){
             parentIdIsOfTypeLong = false;
         }
         if (!parentIdIsOfTypeLong){
@@ -115,7 +115,7 @@ public class TransactionServiceServlet extends HttpServlet {
         boolean amountIsOfTypeDouble = true;
         try {
             Double.valueOf(amountString);
-        } catch (IllegalArgumentException iae){
+        } catch (NumberFormatException iae){
             amountIsOfTypeDouble = false;
         }
         if (!amountIsOfTypeDouble){
@@ -136,7 +136,7 @@ public class TransactionServiceServlet extends HttpServlet {
         boolean idIsOfTypeLong = true;
         try {
             Long.valueOf(transactionIdString);
-        } catch (IllegalArgumentException iae){
+        } catch (NumberFormatException iae){
             idIsOfTypeLong = false;
         }
         if (!idIsOfTypeLong){
@@ -152,7 +152,6 @@ public class TransactionServiceServlet extends HttpServlet {
         try {
             Transaction result = transactionStore.getTransactionById(Long.valueOf(transactionIdString));
             if (result != null) {
-
                 String parentIdJsonValue = result.getParentId().isPresent() ? String.valueOf(result.getParentId().get()) : "";
                 resultJsonBuilder = resultJsonBuilder
                         .add("amount", result.getAmount())
