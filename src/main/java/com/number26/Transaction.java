@@ -14,7 +14,7 @@ public class Transaction {
 
     public Transaction(long id, String type, Long parentId, BigDecimal amount) {
         this.id = id;
-        this.type = type;
+        this.type = type == null ? "" : type;
         this.parentId = Optional.ofNullable(parentId);
         this.amount = amount;
         this.totalAmount = amount;
