@@ -30,18 +30,53 @@ public class TransactionStoreTest {
         assertNull("Passing null parameter when getting the transaction by id did not return an empty list ", new TransactionStore().getTransactionById(null));
     }
 
-    @Test
-    public void testEmptyTransactionStoreReturnsEmptyList() {
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetTransactionByIdThrowsExceptionWhenATransactionWithIdDoesNotExist() {
+        TransactionStore transactionStore = new TransactionStore();
+        Transaction transaction = new Transaction(1, "first", null, BigDecimal.ONE);
+        transactionStore.storeTransaction(transaction);
+        assertNull("Store returned a transaction that was not added", transactionStore.getTransactionById(3L));
+    }
 
-        assertTrue("Empty store did not return and empty list", new TransactionStore().getTransactionByType("").isEmpty());
-        assertTrue("Empty store did not return null", new TransactionStore().getTransactionById(0L) == null);
+    @Test
+    public void testGetTransactionByTypeReturnEmptyListWhenATransactionWithTypeDoesNotExist() {
+        TransactionStore transactionStore = new TransactionStore();
+        Transaction transaction = new Transaction(1, "first", null, BigDecimal.ONE);
+        transactionStore.storeTransaction(transaction);
+        assertTrue("Store returned a transaction that was not added", transactionStore.getTransactionByType("someOtherType").isEmpty());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetAmountByIdThrowsExceptionWhenATransactionWithIdDoesNotExist() {
+        TransactionStore transactionStore = new TransactionStore();
+        Transaction transaction = new Transaction(1, "first", null, BigDecimal.ONE);
+        transactionStore.storeTransaction(transaction);
+        assertNull("Store returned an amount that was not added", transactionStore.getAmountById(3L));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetTransactionByIdThrowsExceptionWhenStoreIsEmpty() {
+        assertNull("Empty store returned a transaction by id", new TransactionStore().getTransactionById(3L));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testGetTransactionByTypeThrowsNullPointerExceptionWhenStoreIsEmpty() {
+        assertTrue("Empty store returned a transaction by type", new TransactionStore().getTransactionByType("someOtherType").isEmpty());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetAmountByIdThrowsExceptionWhenStoreIsEmpty() {
+        TransactionStore transactionStore = new TransactionStore();
+        Transaction transaction = new Transaction(1, "first", null, BigDecimal.ONE);
+        transactionStore.storeTransaction(transaction);
+        assertNull("Empty store returned an amount by id", new TransactionStore().getAmountById(3L));
     }
 
     @Test
     public void testStoreCanHoldTransactionsByType() {
         TransactionStore transactionStore = new TransactionStore();
-        Transaction firstTransaction = new Transaction(1, "first", null, null);
-        Transaction secondTransaction = new Transaction(2, "second", null, null);
+        Transaction firstTransaction = new Transaction(1, "first", null, BigDecimal.ONE);
+        Transaction secondTransaction = new Transaction(2, "second", null, BigDecimal.ONE);
 
         transactionStore.storeTransaction(firstTransaction);
         transactionStore.storeTransaction(secondTransaction);
@@ -53,8 +88,8 @@ public class TransactionStoreTest {
     @Test
     public void testStoreCanReturnTransactionsById() {
         TransactionStore transactionStore = new TransactionStore();
-        Transaction firstTransaction = new Transaction(1, "first", null, null);
-        Transaction secondTransaction = new Transaction(2, "second", null, null);
+        Transaction firstTransaction = new Transaction(1, "first", null, BigDecimal.ONE);
+        Transaction secondTransaction = new Transaction(2, "second", null, BigDecimal.ONE);
 
         transactionStore.storeTransaction(firstTransaction);
         transactionStore.storeTransaction(secondTransaction);
@@ -69,8 +104,8 @@ public class TransactionStoreTest {
     public void testStoreThrowsExceptionWhenTryingToLoadTheSameIdTwice() {
 
         TransactionStore transactionStore = new TransactionStore();
-        Transaction firstTransaction = new Transaction(1, "first", null, null);
-        Transaction secondTransaction = new Transaction(1, "second", null, null);
+        Transaction firstTransaction = new Transaction(1, "first", null, BigDecimal.ONE);
+        Transaction secondTransaction = new Transaction(1, "second", null, BigDecimal.ONE);
 
         transactionStore.storeTransaction(firstTransaction);
         transactionStore.storeTransaction(secondTransaction);
@@ -80,8 +115,8 @@ public class TransactionStoreTest {
     public void testStoreHoldsNullTradeTypeAsEmptyString() {
 
         TransactionStore transactionStore = new TransactionStore();
-        Transaction firstTransaction = new Transaction(1, null, null, null);
-        Transaction secondTransaction = new Transaction(2, "", null, null);
+        Transaction firstTransaction = new Transaction(1, null, null, BigDecimal.ONE);
+        Transaction secondTransaction = new Transaction(2, "", null, BigDecimal.ONE);
 
         transactionStore.storeTransaction(firstTransaction);
         transactionStore.storeTransaction(secondTransaction);
@@ -99,11 +134,11 @@ public class TransactionStoreTest {
     public void testStoreCorrectlyReturnsTransactionsByType() {
 
         TransactionStore transactionStore = new TransactionStore();
-        Transaction firstTransaction = new Transaction(1, "first", null, null);
-        Transaction secondTransaction = new Transaction(2, "second", null, null);
-        Transaction thirdTransaction = new Transaction(3, "first", null, null);
-        Transaction fourthTransaction = new Transaction(4, "first", null, null);
-        Transaction fifthTransaction = new Transaction(5, "second", null, null);
+        Transaction firstTransaction = new Transaction(1, "first", null, BigDecimal.ONE);
+        Transaction secondTransaction = new Transaction(2, "second", null, BigDecimal.ONE);
+        Transaction thirdTransaction = new Transaction(3, "first", null, BigDecimal.ONE);
+        Transaction fourthTransaction = new Transaction(4, "first", null, BigDecimal.ONE);
+        Transaction fifthTransaction = new Transaction(5, "second", null, BigDecimal.ONE);
 
         transactionStore.storeTransaction(firstTransaction);
         transactionStore.storeTransaction(secondTransaction);
@@ -156,8 +191,8 @@ public class TransactionStoreTest {
     @Test(expected = IllegalArgumentException.class)
     public void testStoreThrowsExceptionWhenTheParentIdDoesNotExist() {
         TransactionStore transactionStore = new TransactionStore();
-        Transaction firstTransaction = new Transaction(1, "first", null, null);
-        Transaction secondTransaction = new Transaction(2, "second", 3L, null);
+        Transaction firstTransaction = new Transaction(1, "first", null, BigDecimal.ONE);
+        Transaction secondTransaction = new Transaction(2, "second", 3L, BigDecimal.ONE);
 
         transactionStore.storeTransaction(firstTransaction);
         transactionStore.storeTransaction(secondTransaction);
@@ -176,6 +211,12 @@ public class TransactionStoreTest {
         transactionStore.storeTransaction(secondTransaction);
         transactionStore.storeTransaction(thirdTransaction);
         transactionStore.storeTransaction(fourthTransaction);
+
+        try {
+            Thread.sleep(10 * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         assertEquals("Store did not return the correct amount for the first transaction", BigDecimal.valueOf(7.45), transactionStore.getAmountById(1L).stripTrailingZeros());
         assertEquals("Store did not return the correct amount for the second transaction", BigDecimal.valueOf(5.116), transactionStore.getAmountById(2L).stripTrailingZeros());
@@ -205,7 +246,7 @@ public class TransactionStoreTest {
         }
 
         try {
-            Thread.sleep(60 * 1000);
+            Thread.sleep(120 * 1000);
         } catch (InterruptedException e) {
             executorService.shutdown();
             e.printStackTrace();
@@ -221,9 +262,10 @@ public class TransactionStoreTest {
 
 
     @Test
-    public void testStoreCorrectlyReturnsAmountForTransactionIdWhenParralelRequestsAreLinkedToEeachother() throws InterruptedException {
+    public void testStoreCorrectlyReturnsAmountForTransactionIdWhenTransactionsAreLinkedToEeachother() throws InterruptedException {
         AtomicLong childNumber = new AtomicLong(5);
-        int numberOfThreads = 10 * 1000;
+        AtomicLong previousChildNumber = new AtomicLong(4);
+        int numberOfTransactions = 1000;
 
         TransactionStore transactionStore = new TransactionStore();
         Transaction firstTransaction = new Transaction(1, "first", null, BigDecimal.valueOf(2.334));
@@ -236,31 +278,28 @@ public class TransactionStoreTest {
         transactionStore.storeTransaction(thirdTransaction);
         transactionStore.storeTransaction(fourthTransaction);
 
-        ExecutorService executorService = new ScheduledThreadPoolExecutor(100);
-        for (int i = 0; i < numberOfThreads; i++) {
-            executorService.submit(() -> addFourTransationsToTheStoreWithEachotherAsParent(childNumber, transactionStore));
+        for (int i = 0; i < numberOfTransactions; i++) {
+            addFourTransationsToTheStoreWithEachotherAsParent(childNumber, previousChildNumber, transactionStore);
         }
 
         try {
-            Thread.sleep(60 * 1000);
+            Thread.sleep(30 * 1000);
         } catch (InterruptedException e) {
-            executorService.shutdown();
             e.printStackTrace();
             throw e;
         }
-        executorService.shutdown();
-        assertEquals("Store did not return the correct amount for the first transaction", BigDecimal.valueOf(5.116 * numberOfThreads + 7.45), transactionStore.getAmountById(1L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the second transaction", BigDecimal.valueOf(2 * numberOfThreads + 5.116), transactionStore.getAmountById(2L).stripTrailingZeros());
+
+        assertEquals("Store did not return the correct amount for the first transaction", BigDecimal.valueOf(5.116 * numberOfTransactions + 7.45), transactionStore.getAmountById(1L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the second transaction", BigDecimal.valueOf(5.116 * numberOfTransactions + 5.116), transactionStore.getAmountById(2L).stripTrailingZeros());
         assertEquals("Store did not return the correct amount for the third transaction", BigDecimal.valueOf(-2.5), transactionStore.getAmountById(3L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the fourth transaction", BigDecimal.valueOf(4.5), transactionStore.getAmountById(4L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the fourth transaction", BigDecimal.valueOf(5.116 * numberOfTransactions + 4.5), transactionStore.getAmountById(4L).stripTrailingZeros());
 
     }
 
-    private void addFourTransationsToTheStoreWithEachotherAsParent(AtomicLong childNumber, TransactionStore transactionStore) {
-        Long previousChild = childNumber.get();
-        Transaction secondChildTransaction = new Transaction(childNumber.getAndIncrement(), "second", previousChild, BigDecimal.valueOf(3.116));
-        Transaction thirdChildTransaction = new Transaction(childNumber.getAndIncrement(), "third", previousChild, BigDecimal.valueOf(-2.5));
-        Transaction fourthChildTransaction = new Transaction(childNumber.getAndIncrement(), "fourth", previousChild, BigDecimal.valueOf(4.5));
+    private void addFourTransationsToTheStoreWithEachotherAsParent(AtomicLong childNumber, AtomicLong previousChildNumber, TransactionStore transactionStore) {
+        Transaction secondChildTransaction = new Transaction(childNumber.getAndIncrement(), "second", previousChildNumber.getAndIncrement(), BigDecimal.valueOf(3.116));
+        Transaction thirdChildTransaction = new Transaction(childNumber.getAndIncrement(), "third", previousChildNumber.getAndIncrement(), BigDecimal.valueOf(-2.5));
+        Transaction fourthChildTransaction = new Transaction(childNumber.getAndIncrement(), "fourth", previousChildNumber.getAndIncrement(), BigDecimal.valueOf(4.5));
 
         transactionStore.storeTransaction(secondChildTransaction);
         transactionStore.storeTransaction(thirdChildTransaction);

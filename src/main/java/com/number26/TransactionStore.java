@@ -23,40 +23,45 @@ public class TransactionStore {
     }
 
     public Transaction getTransactionById(Long id){
+        if (store.get(id) == null) throw new IllegalArgumentException(String.format("Transaction with id : {%s} does not exist", id));
         return store.get(id);
     }
 
     public void storeTransaction(Transaction transaction) throws IllegalArgumentException {
-        System.out.println(String.format("Adding transaction id {%d}", transaction.getId()));
-        validateTransaction(transaction);
-        store.put(transaction.getId(), transaction);
+        ArrayList<String> exceptions = getValidationExceptions(transaction);
 
-        Executor executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> updateTransactionWithTotalAmount(transaction));
+        if ( !exceptions.isEmpty() ){
+            System.out.println(Joiner.on("\t").join(exceptions));
+            throw new IllegalArgumentException(Joiner.on("\t").join(exceptions));
+        } else {
+            store.put(transaction.getId(), transaction);
 
-        System.out.println(String.format("Transaction id {%s}", transaction.getId() + " added"));
+            Executor executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> updateTransactionWithTotalAmount(transaction));
+        }
     }
 
-    private void validateTransaction(Transaction transaction) {
-
-        // add transaction validators here
+    private ArrayList<String> getValidationExceptions(Transaction transaction) {
 
         ArrayList<String> exceptions = new ArrayList<>();
 
         if (store.get(transaction.getId())!= null) {
-            exceptions.add(String.format("Already have a transaction with id : {%s}", transaction.getId()));
+            exceptions.add(String.format("Already stored a transaction with id : {%s}", transaction.getId()));
         }
 
         if (transaction.getAmount()== null) {
-            exceptions.add("Transaction with id {%s} does not have an amount" + transaction.getId());
+            exceptions.add("Transaction with id {%s} does not have an amount " + transaction.getId());
         }
 
         if (transaction.getParentId().isPresent() && store.get(transaction.getParentId().get()) == null) {
-            exceptions.add(String.format("Transaction with id {%s} has  parent id {%s} which doens not exist ", transaction.getId(), transaction.getParentId()));
+            exceptions.add(String.format("Transaction with id {%s} has parent id {%s} which doens not exist ", transaction.getId(), transaction.getParentId().get()));
         }
-       if ( !exceptions.isEmpty() ){
-           throw new IllegalArgumentException(Joiner.on("\t").join(exceptions));
-       }
+
+        if (transaction.getParentId().isPresent() && transaction.getId() == transaction.getParentId().get()) {
+            exceptions.add(String.format("Transaction id {%s} can not have the same parent id {%s} ", transaction.getId(), transaction.getParentId()));
+        }
+        return exceptions;
+
     }
 
     /*
@@ -76,7 +81,8 @@ public class TransactionStore {
         }
     }
 
-    public BigDecimal getAmountById(Long i) {
-          return store.get(i).getTotalAmount();
+    public BigDecimal getAmountById(Long id) {
+       if (store.get(id) == null) throw new IllegalArgumentException(String.format("Transaction with id : {%s} does not exist", id));
+          return  store.get(id).getTotalAmount();
     }
 }
