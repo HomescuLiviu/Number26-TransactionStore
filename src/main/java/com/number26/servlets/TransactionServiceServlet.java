@@ -92,7 +92,7 @@ public class TransactionServiceServlet extends TransactionServletBase {
         boolean parentIdIsOfTypeLong = true;
         if (parentIdString == null || parentIdString.isEmpty()) return true;
         try {
-            Long.valueOf(parentIdString);
+            Long.parseLong(parentIdString);
         } catch (NumberFormatException iae){
             parentIdIsOfTypeLong = false;
         }
@@ -112,7 +112,7 @@ public class TransactionServiceServlet extends TransactionServletBase {
 
         boolean amountIsOfTypeDouble = true;
         try {
-            Double.valueOf(amountString);
+            Double.parseDouble(amountString);
         } catch (NumberFormatException iae){
             amountIsOfTypeDouble = false;
         }
@@ -128,7 +128,7 @@ public class TransactionServiceServlet extends TransactionServletBase {
 
     private JsonObjectBuilder getTransactionByIdAsJson(JsonObjectBuilder resultJsonBuilder, String transactionIdString, HttpServletResponse resp) {
         try {
-            Transaction result = transactionStore.getTransactionById(Long.valueOf(transactionIdString));
+            Transaction result = transactionStore.getTransactionById(Long.parseLong(transactionIdString));
             if (result != null) {
                 String parentIdJsonValue = result.getParentId().isPresent() ? String.valueOf(result.getParentId().get()) : "";
                 resultJsonBuilder = resultJsonBuilder

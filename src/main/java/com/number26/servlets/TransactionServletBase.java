@@ -23,7 +23,7 @@ public class TransactionServletBase extends HttpServlet {
 
         boolean idIsOfTypeLong = true;
         try {
-            Long.valueOf(transactionIdString);
+            Long.parseLong(transactionIdString);
         } catch (NumberFormatException iae){
             idIsOfTypeLong = false;
         }

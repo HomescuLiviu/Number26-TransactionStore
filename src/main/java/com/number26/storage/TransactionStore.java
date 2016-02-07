@@ -32,7 +32,7 @@ public class TransactionStore {
     public void storeTransaction(Transaction transaction) throws IllegalArgumentException {
         ArrayList<String> exceptions = getValidationExceptions(transaction);
 
-        if ( !exceptions.isEmpty() ){
+        if (!exceptions.isEmpty() ){
             System.out.println(Joiner.on("\t").join(exceptions));
             throw new IllegalArgumentException(Joiner.on("\t").join(exceptions));
         } else {
