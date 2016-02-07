@@ -4,8 +4,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.number26.storage.TransactionStore;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,8 +22,6 @@ public class TransactionTypeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<String> requestValues = Splitter.on("/").splitToList(req.getPathInfo());
-
-        JsonObjectBuilder resultJsonBuilder = Json.createObjectBuilder();
 
         try {
             String transactionType = requestValues.get(requestValues.size() - 1);
