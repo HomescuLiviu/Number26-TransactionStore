@@ -32,11 +32,10 @@ There are 3 Servlets:
     
 The application creats a ".war" filw which can be deployed to a web container(Tomcat, Jboss, Jetty...etc)
 
-The application has been deployed in 2 ways :
+There ius a maven plugin for tomcat that will deploy the war to the selected tomcat instance.
 
-1. Run a local tomcat on posrt 8083 with password and user admin(port password and user are configurable in pom.xml)
+1. Run a local tomcat on port 8083 with password and user admin(port password and user are configurable in pom.xml)
 
-2. Run on Jetty using the command in jetty-startup-command.txt file
 
   
   
