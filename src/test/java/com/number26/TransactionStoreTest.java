@@ -103,7 +103,7 @@ public class TransactionStoreTest {
 
 
     @Test(expected = IllegalArgumentException.class)
-    public void testStoreThrowsExceptionWhenTryingToLoadTheSameIdTwice() {
+    public void testStoreCanLoadTheSameIdTwice() {
 
         TransactionStore transactionStore = new TransactionStore();
         Transaction firstTransaction = new Transaction(1, "first", null, BigDecimal.ONE);

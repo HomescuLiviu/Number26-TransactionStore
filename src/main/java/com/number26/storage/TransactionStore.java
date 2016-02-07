@@ -37,7 +37,6 @@ public class TransactionStore {
             throw new IllegalArgumentException(Joiner.on("\t").join(exceptions));
         } else {
             store.put(transaction.getId(), transaction);
-
             Executor executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> updateTransactionWithTotalAmount(transaction));
         }

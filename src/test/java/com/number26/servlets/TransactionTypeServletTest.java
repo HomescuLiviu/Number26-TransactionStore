@@ -62,5 +62,4 @@ public class TransactionTypeServletTest {
         verify(writerMock, times(1)).append("]");
         verify(writerMock, times(2)).append(anyString());
     }
-
 }
