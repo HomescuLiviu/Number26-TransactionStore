@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.*;
 
 public class TransactionServiceServletTest {
@@ -38,7 +37,7 @@ public class TransactionServiceServletTest {
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIsEmpty() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/");
-        when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
+
 
         transactionServiceServlet.doGet(requestMock, responseMock);
 
@@ -50,7 +49,7 @@ public class TransactionServiceServletTest {
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIsIncomplete() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice");
-        when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
+
 
         transactionServiceServlet.doGet(requestMock, responseMock);
 
@@ -63,7 +62,7 @@ public class TransactionServiceServletTest {
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestDoesNotContainAnId() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction");
-        when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
+
 
         transactionServiceServlet.doGet(requestMock, responseMock);
 
@@ -75,7 +74,7 @@ public class TransactionServiceServletTest {
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIsTooLong() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/transaction");
-        when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
+
 
         transactionServiceServlet.doGet(requestMock, responseMock);
 
@@ -87,7 +86,7 @@ public class TransactionServiceServletTest {
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestPathStartsWrong() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transactionservice/transaction/2");
-        when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
+
 
         transactionServiceServlet.doGet(requestMock, responseMock);
 
@@ -99,7 +98,7 @@ public class TransactionServiceServletTest {
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIdIsNotANumber() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/a");
-        when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
+
 
         transactionServiceServlet.doGet(requestMock, responseMock);
 
@@ -111,7 +110,6 @@ public class TransactionServiceServletTest {
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestHasMultipleIds() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/2/3");
-        when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
 
         transactionServiceServlet.doGet(requestMock, responseMock);
 
@@ -124,7 +122,6 @@ public class TransactionServiceServletTest {
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIdIsNotALong() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/2.3");
-        when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
 
         transactionServiceServlet.doGet(requestMock, responseMock);
 
@@ -136,7 +133,6 @@ public class TransactionServiceServletTest {
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIdIsTooLong() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/123456789123456789123456789123456789123456789123456789");
-        when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
 
         transactionServiceServlet.doGet(requestMock, responseMock);
 
@@ -148,13 +144,22 @@ public class TransactionServiceServletTest {
     public void testGettingTransactionByIdReturnsEmptyJsonWhenStoreIsEmpty() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/1");
+        when(transactionStoreMock.getTransactionById(anyLong())).thenReturn(null);
+        transactionServiceServlet.doGet(requestMock, responseMock);
+
+        verify(writerMock, times(1)).append("{}");
+    }
+
+    @Test
+    public void testGettingTransactionByTypeReturnsListOfErrorsWhenStoreRetuensErrors() throws ServletException, IOException {
+
+        when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/1");
         when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
 
         transactionServiceServlet.doGet(requestMock, responseMock);
 
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(BAD_FORMAT_ERROR_JSON);
+        verify(writerMock, times(1)).append("{\"errors\":\"Test exception\"}");
     }
-
 
 }

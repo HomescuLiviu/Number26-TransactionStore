@@ -50,11 +50,7 @@ public class TransactionServiceServlet extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resultJsonBuilder = resultJsonBuilder.add("errors", ID_lONG_ERROR);
             } else {
-                Transaction result = transactionStore.getTransactionById(Long.valueOf(transactionIdString));
-                resultJsonBuilder = resultJsonBuilder
-                                    .add("amount", result.getAmount())
-                                    .add("type", result.getType())
-                                    .add("parent_id", result.getParentId().get());
+                resultJsonBuilder = getResponseJson(resultJsonBuilder, transactionIdString, resp);
             }
         } else {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -65,6 +61,21 @@ public class TransactionServiceServlet extends HttpServlet {
 
     }
 
+    private JsonObjectBuilder getResponseJson(JsonObjectBuilder resultJsonBuilder, String transactionIdString, HttpServletResponse resp) {
+        try {
+            Transaction result = transactionStore.getTransactionById(Long.valueOf(transactionIdString));
+            if (result != null) {
+                resultJsonBuilder = resultJsonBuilder
+                        .add("amount", result.getAmount())
+                        .add("type", result.getType())
+                        .add("parent_id", result.getParentId().get());
+            }
+        } catch (IllegalArgumentException iae){
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resultJsonBuilder = resultJsonBuilder.add("errors", iae.getMessage());
+        }
+        return resultJsonBuilder;
+    }
 
 
 }
