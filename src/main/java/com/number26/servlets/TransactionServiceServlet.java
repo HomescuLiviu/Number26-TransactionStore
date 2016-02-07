@@ -24,6 +24,7 @@ public class TransactionServiceServlet extends HttpServlet {
     private static final String ID_lONG_ERROR = "Id {%s} is not a long";
     private static final String PARENT_ID_LONG_ERROR = "Parent id {%s} is not a long";
     private static final String AMOUNT_DOUBLE_ERROR = "Amount {%s} is not a double";
+    private static final String STATUS_OK = "ok";
 
     private final TransactionStore transactionStore;
 
@@ -57,6 +58,8 @@ public class TransactionServiceServlet extends HttpServlet {
             try {
                 Transaction transaction = createTransactionFromParameters(req);
                 transactionStore.storeTransaction(transaction);
+                resultJsonBuilder = resultJsonBuilder.add("status", STATUS_OK);
+                resp.getWriter().append(resultJsonBuilder.build().toString());
             } catch (IllegalArgumentException iae){
                 setStatusAndErrorMessages(resp, resultJsonBuilder, iae);
             }

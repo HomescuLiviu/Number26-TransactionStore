@@ -13,13 +13,9 @@ import java.util.ArrayList;
 
 import static org.mockito.Mockito.*;
 
-/**
- * Created by liviu on 2/7/2016.
- */
-public class TransactionTypeServletTest {
 
-    private static final String BAD_FORMAT_ERROR_JSON = "{\"errors\":\"Bad format error please use 'transactionservice/types/transaction_id'\"}";
-    private static final String ID_lONG_JSON = "{\"errors\":\"Id is not a long\"}";
+public class TransactionTypeServletTest {
+    private static final String TRANSACTION_TYPE_ERROR = "{\"errors\":\"Error when trying to find transactions with type {%s} : {%s}\"}";
 
     private TransactionStore transactionStoreMock = mock(TransactionStore.class);
     private PrintWriter writerMock = mock(PrintWriter.class);
@@ -47,7 +43,7 @@ public class TransactionTypeServletTest {
         transactionTypeServlet.doGet(requestMock, responseMock);
 
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(BAD_FORMAT_ERROR_JSON);
+        verify(writerMock, times(1)).append(String.format(TRANSACTION_TYPE_ERROR, "testtype", "Test exception"));
     }
 
     @Test
@@ -62,7 +58,6 @@ public class TransactionTypeServletTest {
         verify(writerMock, times(1)).append("]");
         verify(writerMock, times(2)).append(anyString());
     }
-
 
     @Test
     public void testCanGetMultipleTransactiosWithTheSameId() throws ServletException, IOException {
@@ -81,8 +76,9 @@ public class TransactionTypeServletTest {
 
         localTransactionServiceServlet.doPut(firstPutRequestMock, responseMock);
 
+        verify(writerMock, times(1)).append("{\"status\":\"ok\"}");
         verify(responseMock, times(1)).setStatus(HttpServletResponse.SC_OK);
-        verify(writerMock, never()).append(any());
+        verify(writerMock, times(1)).append("{\"status\":\"ok\"}");
 
         when(secondPutRequestMock.getPathInfo()).thenReturn("/transactionservice/transaction/2");
         when(secondPutRequestMock.getParameter("parent_id")).thenReturn("1");
@@ -91,7 +87,7 @@ public class TransactionTypeServletTest {
 
         localTransactionServiceServlet.doPut(secondPutRequestMock, responseMock);
 
-        verify(writerMock, never()).append(any());
+        verify(writerMock, times(2)).append("{\"status\":\"ok\"}");
         verify(responseMock, times(2)).setStatus(HttpServletResponse.SC_OK);
         verify(responseMock, never()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
@@ -100,7 +96,50 @@ public class TransactionTypeServletTest {
         verify(writerMock, times(1)).append("[");
         verify(writerMock, times(1)).append("1,2");
         verify(writerMock, times(1)).append("]");
-        verify(writerMock, times(3)).append(anyString());
+        verify(writerMock, times(5)).append(anyString()); // 3 times for the [1,2] and twice for the ok responses
 
     }
+
+    @Test
+    public void testTransactionsOfTypeNullAreSameAsOfTypeEmpty() throws ServletException, IOException {
+
+        TransactionStore transactionStore = new TransactionStore();
+        TransactionServiceServlet localTransactionServiceServlet = new TransactionServiceServlet(transactionStore);
+        TransactionTypeServlet localTransactionTypeServlet = new TransactionTypeServlet(transactionStore);
+        HttpServletRequest firstPutRequestMock = mock(HttpServletRequest.class);
+        HttpServletRequest secondPutRequestMock = mock(HttpServletRequest.class);
+
+        when(requestMock.getPathInfo()).thenReturn("/transactionservice/types/");
+        when(firstPutRequestMock.getPathInfo()).thenReturn("/transactionservice/transaction/1");
+
+        when(firstPutRequestMock.getParameter("parent_id")).thenReturn(null);
+        when(firstPutRequestMock.getParameter("amount")).thenReturn("2.3");
+        when(firstPutRequestMock.getParameter("type")).thenReturn("");
+
+        localTransactionServiceServlet.doPut(firstPutRequestMock, responseMock);
+
+        verify(writerMock, times(1)).append("{\"status\":\"ok\"}");
+        verify(responseMock, times(1)).setStatus(HttpServletResponse.SC_OK);
+        verify(writerMock, times(1)).append("{\"status\":\"ok\"}");
+
+        when(secondPutRequestMock.getPathInfo()).thenReturn("/transactionservice/transaction/2");
+        when(secondPutRequestMock.getParameter("parent_id")).thenReturn("1");
+        when(secondPutRequestMock.getParameter("amount")).thenReturn("2.3");
+        when(secondPutRequestMock.getParameter("type")).thenReturn(null);
+
+        localTransactionServiceServlet.doPut(secondPutRequestMock, responseMock);
+
+        verify(writerMock, times(2)).append("{\"status\":\"ok\"}");
+        verify(responseMock, times(2)).setStatus(HttpServletResponse.SC_OK);
+        verify(responseMock, never()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+        localTransactionTypeServlet.doGet(requestMock, responseMock);
+
+        verify(writerMock, times(1)).append("[");
+        verify(writerMock, times(1)).append("1,2");
+        verify(writerMock, times(1)).append("]");
+        verify(writerMock, times(5)).append(anyString());
+
+    }
+
 }

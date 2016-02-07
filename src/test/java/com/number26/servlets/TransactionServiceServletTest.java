@@ -43,7 +43,7 @@ public class TransactionServiceServletTest {
         transactionServiceServlet.doGet(requestMock, responseMock);
 
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(ID_NOT_LONG_ERROR);
+        verify(writerMock, times(1)).append(String.format(ID_NOT_LONG_ERROR, "a"));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class TransactionServiceServletTest {
         transactionServiceServlet.doGet(requestMock, responseMock);
 
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(String.format(AMOUNT_NOT_DOUBLE_ERROR, 2.3));
+        verify(writerMock, times(1)).append(String.format(ID_NOT_LONG_ERROR, 2.3));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class TransactionServiceServletTest {
         transactionServiceServlet.doGet(requestMock, responseMock);
 
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(String.format(AMOUNT_NOT_DOUBLE_ERROR, "123456789123456789123456789123456789123456789123456789"));
+        verify(writerMock, times(1)).append(String.format(ID_NOT_LONG_ERROR, "123456789123456789123456789123456789123456789123456789"));
     }
 
     @Test
@@ -94,6 +94,10 @@ public class TransactionServiceServletTest {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/1");
         Mockito.doThrow(new IllegalArgumentException("Test exception")).when(transactionStoreMock).storeTransaction(any());
+
+        when(requestMock.getParameter("parent_id")).thenReturn("3");
+        when(requestMock.getParameter("amount")).thenReturn("2.3");
+        when(requestMock.getParameter("type")).thenReturn("some");
 
         transactionServiceServlet.doPut(requestMock, responseMock);
 
@@ -163,7 +167,7 @@ public class TransactionServiceServletTest {
 
         localTransactionServiceServlet.doPut(requestMock, responseMock);
 
-        verify(writerMock, never()).append(any());
+        verify(writerMock, times(1)).append("{\"status\":\"ok\"}");
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_OK);
 
         localTransactionServiceServlet.doGet(requestMock, responseMock);
@@ -173,7 +177,7 @@ public class TransactionServiceServletTest {
 
 
     @Test
-    public void testCanPutMultipleTransactios() throws ServletException, IOException {
+    public void testCanPutMultipleTransactions() throws ServletException, IOException {
         TransactionStore transactionStore = new TransactionStore();
         TransactionServiceServlet localTransactionServiceServlet = new TransactionServiceServlet(transactionStore);
         HttpServletRequest secondRequestMock = mock(HttpServletRequest.class);
@@ -186,8 +190,8 @@ public class TransactionServiceServletTest {
 
         localTransactionServiceServlet.doPut(requestMock, responseMock);
 
+        verify(writerMock, times(1)).append("{\"status\":\"ok\"}");
         verify(responseMock, times(1)).setStatus(HttpServletResponse.SC_OK);
-        verify(writerMock, never()).append(any());
 
         when(secondRequestMock.getPathInfo()).thenReturn("/transactionservice/transaction/2");
         when(secondRequestMock.getParameter("parent_id")).thenReturn("1");
@@ -196,7 +200,7 @@ public class TransactionServiceServletTest {
 
         localTransactionServiceServlet.doPut(secondRequestMock, responseMock);
 
-        verify(writerMock, never()).append(any());
+        verify(writerMock, times(2)).append("{\"status\":\"ok\"}");
         verify(responseMock, times(2)).setStatus(HttpServletResponse.SC_OK);
 
         localTransactionServiceServlet.doGet(requestMock, responseMock);
