@@ -15,9 +15,10 @@ public class TransactionServiceModule extends ServletModule {
 
     @Override
     protected void configureServlets() {
+        System.out.print("Setting up the servlets");
         serve("/transactionservice/transaction/{1}-?[0-9]+").with(TransactionServiceServlet.class);
         serve("/transactionservice/types/*").with(TransactionTypeServlet.class);
-        serve("/transactionservice/sum/*").with(TransactionAmountServlet.class);
+        serve("/transactionservice/sum/{1}-?[0-9]+").with(TransactionAmountServlet.class);
 
     }
 }

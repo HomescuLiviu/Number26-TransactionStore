@@ -1,6 +1,7 @@
 package com.number26.servlets;
 
 import com.google.common.base.Splitter;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.number26.storage.Transaction;
 import com.number26.storage.TransactionStore;
@@ -20,6 +21,7 @@ public class TransactionAmountServlet extends TransactionServletBase {
 
     private final TransactionStore transactionStore;
 
+    @Inject
     public TransactionAmountServlet(TransactionStore transactionStore) {
         this.transactionStore = transactionStore;
     }

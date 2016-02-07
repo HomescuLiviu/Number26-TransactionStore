@@ -12,9 +12,6 @@ import java.util.List;
 
 import static javax.json.Json.createObjectBuilder;
 
-/**
- * Created by liviu on 2/7/2016.
- */
 public class TransactionServletBase extends HttpServlet {
 
     protected static final String ID_lONG_ERROR = "Id {%s} is not a long";

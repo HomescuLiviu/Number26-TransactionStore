@@ -12,6 +12,7 @@ public class ApplicationListener extends GuiceServletContextListener {
 
     @Override
     protected Injector getInjector() {
+        System.out.println("Adding the module");
         return Guice.createInjector(new TransactionServiceModule());
     }
 }

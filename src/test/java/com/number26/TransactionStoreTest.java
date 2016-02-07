@@ -61,7 +61,7 @@ public class TransactionStoreTest {
         assertNull("Empty store returned a transaction by id", new TransactionStore().getTransactionById(3L));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testGetTransactionByTypeThrowsNullPointerExceptionWhenStoreIsEmpty() {
         assertTrue("Empty store returned a transaction by type", new TransactionStore().getTransactionsByType("someOtherType").isEmpty());
     }

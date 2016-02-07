@@ -1,0 +1,3 @@
+java -jar jetty-runner-8.1.9.jar --port 8082 --path /transactionservice D:\ProiecteNoi\Number26-TransactionStore\target\Number26-TransactionStore-1.0-SNAPSHOT.war
+
+java -jar jetty-runner-8.1.9.jar --port 8082 --path /transactionservice {PATH_TO_WAR}\Number26-TransactionStore-1.0-SNAPSHOT.war
