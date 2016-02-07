@@ -24,7 +24,7 @@ public class TransactionStoreTest {
 
     @Test
     public void testGetTransactionByTypeReturnsEmptyListForNullParameters() {
-        assertTrue("Passing null parameter when getting the transaction by type did not return an empty list ", new TransactionStore().getTransactionByType(null).isEmpty());
+        assertTrue("Passing null parameter when getting the transaction by type did not return an empty list ", new TransactionStore().getTransactionsByType(null).isEmpty());
     }
 
     @Test(expected = NullPointerException.class)
@@ -45,7 +45,7 @@ public class TransactionStoreTest {
         TransactionStore transactionStore = new TransactionStore();
         Transaction transaction = new Transaction(1, "first", null, BigDecimal.ONE);
         transactionStore.storeTransaction(transaction);
-        assertTrue("Store returned a transaction that was not added", transactionStore.getTransactionByType("someOtherType").isEmpty());
+        assertTrue("Store returned a transaction that was not added", transactionStore.getTransactionsByType("someOtherType").isEmpty());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -63,7 +63,7 @@ public class TransactionStoreTest {
 
     @Test(expected = NullPointerException.class)
     public void testGetTransactionByTypeThrowsNullPointerExceptionWhenStoreIsEmpty() {
-        assertTrue("Empty store returned a transaction by type", new TransactionStore().getTransactionByType("someOtherType").isEmpty());
+        assertTrue("Empty store returned a transaction by type", new TransactionStore().getTransactionsByType("someOtherType").isEmpty());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -83,8 +83,8 @@ public class TransactionStoreTest {
         transactionStore.storeTransaction(firstTransaction);
         transactionStore.storeTransaction(secondTransaction);
 
-        assertTrue("Store did not hold the first transaction by type", transactionStore.getTransactionByType("first").contains("1"));
-        assertTrue("Store did not hold the second transaction by type", transactionStore.getTransactionByType("second").contains("2"));
+        assertTrue("Store did not hold the first transaction by type", transactionStore.getTransactionsByType("first").contains("1"));
+        assertTrue("Store did not hold the second transaction by type", transactionStore.getTransactionsByType("second").contains("2"));
     }
 
     @Test
@@ -148,8 +148,8 @@ public class TransactionStoreTest {
         transactionStore.storeTransaction(fourthTransaction);
         transactionStore.storeTransaction(fifthTransaction);
 
-        List<String> firstResult = transactionStore.getTransactionByType("first");
-        List<String> secondResult = transactionStore.getTransactionByType("second");
+        List<String> firstResult = transactionStore.getTransactionsByType("first");
+        List<String> secondResult = transactionStore.getTransactionsByType("second");
 
         assertFalse("Transaction store did not return any ids for the requested type",
                 firstResult.isEmpty());

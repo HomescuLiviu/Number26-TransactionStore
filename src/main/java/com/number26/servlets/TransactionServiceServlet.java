@@ -22,7 +22,7 @@ import static com.number26.TransactionUtils.validateRequest;
 @Singleton
 public class TransactionServiceServlet extends HttpServlet {
 
-    private static final String GET_PATH_FORMAT = "/transactionservice/transaction{1}/-?[0-9]+";
+    private static final String GET_PATH_FORMAT = "[a-z]*/transaction/{1}-?[0-9]+";
     private static final String ID_lONG_ERROR = "Id is not a long";
 
 
@@ -50,7 +50,7 @@ public class TransactionServiceServlet extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resultJsonBuilder = resultJsonBuilder.add("errors", ID_lONG_ERROR);
             } else {
-                resultJsonBuilder = getResponseJson(resultJsonBuilder, transactionIdString, resp);
+                resultJsonBuilder = getTransactionByIdAsJson(resultJsonBuilder, transactionIdString, resp);
             }
         } else {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -61,7 +61,7 @@ public class TransactionServiceServlet extends HttpServlet {
 
     }
 
-    private JsonObjectBuilder getResponseJson(JsonObjectBuilder resultJsonBuilder, String transactionIdString, HttpServletResponse resp) {
+    private JsonObjectBuilder getTransactionByIdAsJson(JsonObjectBuilder resultJsonBuilder, String transactionIdString, HttpServletResponse resp) {
         try {
             Transaction result = transactionStore.getTransactionById(Long.valueOf(transactionIdString));
             if (result != null) {

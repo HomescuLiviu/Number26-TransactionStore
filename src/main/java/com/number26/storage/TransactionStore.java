@@ -16,7 +16,7 @@ public class TransactionStore {
 
     private ConcurrentHashMap<Long, Transaction> store = new ConcurrentHashMap<>();
 
-    public List<String> getTransactionByType(String type){
+    public List<String> getTransactionsByType(String type){
         return store.values()
                 .parallelStream()
                 .filter((t) -> t.getType().equals(type))

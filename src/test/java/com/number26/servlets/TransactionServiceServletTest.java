@@ -87,7 +87,6 @@ public class TransactionServiceServletTest {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transactionservice/transaction/2");
 
-
         transactionServiceServlet.doGet(requestMock, responseMock);
 
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -151,7 +150,7 @@ public class TransactionServiceServletTest {
     }
 
     @Test
-    public void testGettingTransactionByTypeReturnsListOfErrorsWhenStoreRetuensErrors() throws ServletException, IOException {
+    public void testGettingTransactionByTypeReturnsListOfErrorsWhenStoreReturnsErrors() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/1");
         when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
