@@ -62,4 +62,45 @@ public class TransactionTypeServletTest {
         verify(writerMock, times(1)).append("]");
         verify(writerMock, times(2)).append(anyString());
     }
+
+
+    @Test
+    public void testCanGetMultipleTransactiosWithTheSameId() throws ServletException, IOException {
+        TransactionStore transactionStore = new TransactionStore();
+        TransactionServiceServlet localTransactionServiceServlet = new TransactionServiceServlet(transactionStore);
+        TransactionTypeServlet localTransactionTypeServlet = new TransactionTypeServlet(transactionStore);
+        HttpServletRequest firstPutRequestMock = mock(HttpServletRequest.class);
+        HttpServletRequest secondPutRequestMock = mock(HttpServletRequest.class);
+
+        when(requestMock.getPathInfo()).thenReturn("/transactionservice/types/someType");
+        when(firstPutRequestMock.getPathInfo()).thenReturn("/transactionservice/transaction/1");
+
+        when(firstPutRequestMock.getParameter("parent_id")).thenReturn(null);
+        when(firstPutRequestMock.getParameter("amount")).thenReturn("2.3");
+        when(firstPutRequestMock.getParameter("type")).thenReturn("someType");
+
+        localTransactionServiceServlet.doPut(firstPutRequestMock, responseMock);
+
+        verify(responseMock, times(1)).setStatus(HttpServletResponse.SC_OK);
+        verify(writerMock, never()).append(any());
+
+        when(secondPutRequestMock.getPathInfo()).thenReturn("/transactionservice/transaction/2");
+        when(secondPutRequestMock.getParameter("parent_id")).thenReturn("1");
+        when(secondPutRequestMock.getParameter("amount")).thenReturn("2.3");
+        when(secondPutRequestMock.getParameter("type")).thenReturn("someType");
+
+        localTransactionServiceServlet.doPut(secondPutRequestMock, responseMock);
+
+        verify(writerMock, never()).append(any());
+        verify(responseMock, times(2)).setStatus(HttpServletResponse.SC_OK);
+        verify(responseMock, never()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+        localTransactionTypeServlet.doGet(requestMock, responseMock);
+
+        verify(writerMock, times(1)).append("[");
+        verify(writerMock, times(1)).append("1,2");
+        verify(writerMock, times(1)).append("]");
+        verify(writerMock, times(3)).append(anyString());
+
+    }
 }

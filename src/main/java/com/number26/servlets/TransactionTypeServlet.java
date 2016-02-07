@@ -22,17 +22,18 @@ public class TransactionTypeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<String> requestValues = Splitter.on("/").splitToList(req.getPathInfo());
-
+        resp.getWriter().append("[");
         try {
             String transactionType = requestValues.get(requestValues.size() - 1);
             List<String> result = transactionStore.getTransactionsByType(transactionType);
-            resp.getWriter().append("[");
+
             if (result != null && !result.isEmpty()) {
                 resp.getWriter().append(Joiner.on(",").join(result));
             }
-            resp.getWriter().append("]");
+
         } catch (IllegalArgumentException iae){
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
+        resp.getWriter().append("]");
    }
 }
