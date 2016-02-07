@@ -1,6 +1,7 @@
-package com.number26;
+package com.number26.storage;
 
 import com.google.common.base.Joiner;
+import com.google.inject.Singleton;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+@Singleton
 public class TransactionStore {
 
     private ConcurrentHashMap<Long, Transaction> store = new ConcurrentHashMap<>();

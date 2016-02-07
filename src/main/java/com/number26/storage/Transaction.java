@@ -1,4 +1,4 @@
-package com.number26;
+package com.number26.storage;
 
 import java.math.BigDecimal;
 import java.util.Optional;

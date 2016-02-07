@@ -1,5 +1,7 @@
 package com.number26;
 
+import com.number26.storage.Transaction;
+import com.number26.storage.TransactionStore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
