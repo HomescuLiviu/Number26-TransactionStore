@@ -41,5 +41,6 @@
     <orderEntry type="library" name="Maven: com.google.inject.extensions:guice-servlet:4.0" level="project" />
     <orderEntry type="library" name="Maven: jboss.web:servlet-api:3.0.0.alpha-13" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish:javax.json:1.0.4" level="project" />
+    <orderEntry type="library" name="Maven: com.google.gwt:gwt-dev:2.5.0-redhat-1" level="project" />
   </component>
 </module>

@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.number26.storage.Transaction;
 import com.number26.storage.TransactionStore;
+import org.apache.commons.lang.math.NumberUtils;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -15,16 +16,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-
-import static com.number26.TransactionUtils.validateRequest;
 
 @Singleton
 public class TransactionServiceServlet extends HttpServlet {
 
-    private static final String GET_PATH_FORMAT = "[a-z]*/transaction/{1}-?[0-9]+";
-    private static final String ID_lONG_ERROR = "Id is not a long";
-
+    private static final String NOT_NUMBER_ERROR = "Id {%s} is not a number";
+    private static final String ID_lONG_ERROR = "Id {%s} is not a long";
 
     private final TransactionStore transactionStore;
 
@@ -38,24 +35,24 @@ public class TransactionServiceServlet extends HttpServlet {
         List<String> requestValues = Splitter.on("/").splitToList(req.getPathInfo());
         resp.setContentType("application/json");
 
-        Optional<String> error = validateRequest(req, resp, requestValues, GET_PATH_FORMAT);
-
         JsonObjectBuilder resultJsonBuilder = Json.createObjectBuilder();
 
-        if (!error.isPresent()) {
-            String transactionIdString = requestValues.get(requestValues.size() - 1);
-            Double idAsDouble = Double.valueOf(transactionIdString);
+        String transactionIdString = requestValues.get(requestValues.size() - 1);
+        boolean idIsALong = true;
+        try {
+            Long.valueOf(transactionIdString);
+        } catch (IllegalArgumentException iae){
+            idIsALong = false;
+        }
 
-            if (idAsDouble > Long.MAX_VALUE || idAsDouble < Long.MIN_VALUE ){
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resultJsonBuilder = resultJsonBuilder.add("errors", ID_lONG_ERROR);
-            } else {
-                resultJsonBuilder = getTransactionByIdAsJson(resultJsonBuilder, transactionIdString, resp);
-            }
+        boolean idIsANumber = NumberUtils.isNumber(transactionIdString);
+        if ( idIsANumber && idIsALong){
+            resultJsonBuilder = getTransactionByIdAsJson(resultJsonBuilder, transactionIdString, resp);
         } else {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resultJsonBuilder = resultJsonBuilder.add("errors", error.get());
+            resultJsonBuilder = resultJsonBuilder.add("errors", idIsANumber ? String.format(ID_lONG_ERROR, transactionIdString) : String.format(NOT_NUMBER_ERROR, transactionIdString));
         }
+
         JsonObject resultJson = resultJsonBuilder.build();
         resp.getWriter().append(resultJson.toString());
 

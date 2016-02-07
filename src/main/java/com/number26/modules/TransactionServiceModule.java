@@ -14,7 +14,7 @@ public class TransactionServiceModule extends ServletModule {
 
     @Override
     protected void configureServlets() {
-        serve("/transactionservice/transaction/*").with(TransactionServiceServlet.class);
+        serve("/transactionservice/transaction/{1}-?[0-9]+").with(TransactionServiceServlet.class);
         serve("/transactionservice/types/*").with(TransactionTypeServlet.class);
     }
 }

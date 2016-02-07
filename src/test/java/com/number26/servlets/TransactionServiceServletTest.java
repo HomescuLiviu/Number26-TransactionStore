@@ -13,8 +13,8 @@ import java.io.PrintWriter;
 import static org.mockito.Mockito.*;
 
 public class TransactionServiceServletTest {
-    private static final String BAD_FORMAT_ERROR_JSON = "{\"errors\":\"Bad format error please use 'transactionservice/transaction/transaction_id'\"}";
-    private static final String ID_lONG_JSON = "{\"errors\":\"Id is not a long\"}";
+    private static final String BAD_FORMAT_ERROR_JSON = "{\"errors\":\"Id {a} is not a number\"}";
+    private static final String ID_NOT_LONG_ERROR = "{\"errors\":\"Id {%s} is not a long\"}";
 
     private TransactionStore transactionStoreMock = mock(TransactionStore.class);
     private PrintWriter writerMock = mock(PrintWriter.class);
@@ -34,88 +34,15 @@ public class TransactionServiceServletTest {
     }
 
     @Test
-    public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIsEmpty() throws ServletException, IOException {
-
-        when(requestMock.getPathInfo()).thenReturn("/");
-
-
-        transactionServiceServlet.doGet(requestMock, responseMock);
-
-        verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(BAD_FORMAT_ERROR_JSON);
-    }
-
-    @Test
-    public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIsIncomplete() throws ServletException, IOException {
-
-        when(requestMock.getPathInfo()).thenReturn("/transactionservice");
-
-
-        transactionServiceServlet.doGet(requestMock, responseMock);
-
-        verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(BAD_FORMAT_ERROR_JSON);
-    }
-
-
-    @Test
-    public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestDoesNotContainAnId() throws ServletException, IOException {
-
-        when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction");
-
-
-        transactionServiceServlet.doGet(requestMock, responseMock);
-
-        verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(BAD_FORMAT_ERROR_JSON);
-    }
-
-    @Test
-    public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIsTooLong() throws ServletException, IOException {
-
-        when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/transaction");
-
-
-        transactionServiceServlet.doGet(requestMock, responseMock);
-
-        verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(BAD_FORMAT_ERROR_JSON);
-    }
-
-    @Test
-    public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestPathStartsWrong() throws ServletException, IOException {
-
-        when(requestMock.getPathInfo()).thenReturn("/transactionservice/transactionservice/transaction/2");
-
-        transactionServiceServlet.doGet(requestMock, responseMock);
-
-        verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(BAD_FORMAT_ERROR_JSON);
-    }
-
-    @Test
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIdIsNotANumber() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/a");
 
-
         transactionServiceServlet.doGet(requestMock, responseMock);
 
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
         verify(writerMock, times(1)).append(BAD_FORMAT_ERROR_JSON);
     }
-
-    @Test
-    public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestHasMultipleIds() throws ServletException, IOException {
-
-        when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/2/3");
-
-        transactionServiceServlet.doGet(requestMock, responseMock);
-
-        verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(BAD_FORMAT_ERROR_JSON);
-    }
-
 
     @Test
     public void testGettingTransactionByIdReturnsErrorCodeAndMessageWhenRequestIdIsNotALong() throws ServletException, IOException {
@@ -125,7 +52,7 @@ public class TransactionServiceServletTest {
         transactionServiceServlet.doGet(requestMock, responseMock);
 
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(BAD_FORMAT_ERROR_JSON);
+        verify(writerMock, times(1)).append(String.format(ID_NOT_LONG_ERROR, 2.3));
     }
 
     @Test
@@ -136,7 +63,7 @@ public class TransactionServiceServletTest {
         transactionServiceServlet.doGet(requestMock, responseMock);
 
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        verify(writerMock, times(1)).append(ID_lONG_JSON);
+        verify(writerMock, times(1)).append(String.format(ID_NOT_LONG_ERROR, "123456789123456789123456789123456789123456789123456789"));
     }
 
     @Test
