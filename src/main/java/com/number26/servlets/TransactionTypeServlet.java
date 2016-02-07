@@ -2,6 +2,7 @@ package com.number26.servlets;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.inject.Singleton;
 import com.number26.storage.TransactionStore;
 
 import javax.json.JsonObject;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static javax.json.Json.createObjectBuilder;
 
+@Singleton
 public class TransactionTypeServlet extends HttpServlet {
 
     private static final String TRANSACTION_TYPE_ERROR = "Error when trying to find transactions with type {%s} : {%s}";

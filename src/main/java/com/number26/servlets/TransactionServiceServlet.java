@@ -9,7 +9,6 @@ import com.number26.storage.TransactionStore;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,9 +18,8 @@ import java.util.List;
 import static javax.json.Json.createObjectBuilder;
 
 @Singleton
-public class TransactionServiceServlet extends HttpServlet {
+public class TransactionServiceServlet extends TransactionServletBase {
 
-    private static final String ID_lONG_ERROR = "Id {%s} is not a long";
     private static final String PARENT_ID_LONG_ERROR = "Parent id {%s} is not a long";
     private static final String AMOUNT_DOUBLE_ERROR = "Amount {%s} is not a double";
     private static final String STATUS_OK = "ok";
@@ -126,26 +124,6 @@ public class TransactionServiceServlet extends HttpServlet {
         }
 
         return amountIsOfTypeDouble;
-    }
-
-    private boolean isIdLong(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        List<String> requestValues = Splitter.on("/").splitToList(req.getPathInfo());
-        String transactionIdString = requestValues.get(requestValues.size() - 1);
-        JsonObjectBuilder resultJsonBuilder = createObjectBuilder();
-
-        boolean idIsOfTypeLong = true;
-        try {
-            Long.valueOf(transactionIdString);
-        } catch (NumberFormatException iae){
-            idIsOfTypeLong = false;
-        }
-        if (!idIsOfTypeLong){
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resultJsonBuilder = resultJsonBuilder.add("errors", String.format(ID_lONG_ERROR, transactionIdString));
-            JsonObject resultJson = resultJsonBuilder.build();
-            resp.getWriter().append(resultJson.toString());
-        }
-        return idIsOfTypeLong;
     }
 
     private JsonObjectBuilder getTransactionByIdAsJson(JsonObjectBuilder resultJsonBuilder, String transactionIdString, HttpServletResponse resp) {
