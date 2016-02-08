@@ -37,7 +37,7 @@ public class TransactionAmountServletTest {
     public void testGettingTransactionByIdReturnsListOfErrorsWhenStoreReturnsErrors() throws ServletException, IOException {
 
         when(requestMock.getPathInfo()).thenReturn("/transactionservice/transaction/1");
-        when(transactionStoreMock.getTransactionById(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
+        when(transactionStoreMock.getAmountByTransactionId(anyLong())).thenThrow(new IllegalArgumentException("Test exception"));
         TransactionAmountServlet.doGet(requestMock, responseMock);
 
         verify(responseMock, atLeastOnce()).setStatus(HttpServletResponse.SC_BAD_REQUEST);

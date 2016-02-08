@@ -53,7 +53,7 @@ public class TransactionStoreTest {
         TransactionStore transactionStore = new TransactionStore();
         Transaction transaction = new Transaction(1, "first", null, BigDecimal.ONE);
         transactionStore.storeTransaction(transaction);
-        assertNull("Store returned an amount that was not added", transactionStore.getAmountById(3L));
+        assertNull("Store returned an amount that was not added", transactionStore.getAmountByTransactionId(3L));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -71,7 +71,7 @@ public class TransactionStoreTest {
         TransactionStore transactionStore = new TransactionStore();
         Transaction transaction = new Transaction(1, "first", null, BigDecimal.ONE);
         transactionStore.storeTransaction(transaction);
-        assertNull("Empty store returned an amount by id", new TransactionStore().getAmountById(3L));
+        assertNull("Empty store returned an amount by id", new TransactionStore().getAmountByTransactionId(3L));
     }
 
     @Test
@@ -185,7 +185,7 @@ public class TransactionStoreTest {
         Transaction firstTransaction = new Transaction(1, "first", null, BigDecimal.valueOf(2.334));
 
         transactionStore.storeTransaction(firstTransaction);
-        BigDecimal amount = transactionStore.getAmountById(1L);
+        BigDecimal amount = transactionStore.getAmountByTransactionId(1L);
 
         assertEquals("Store did not return the correct total amount", BigDecimal.valueOf(2.334), amount);
     }
@@ -220,10 +220,10 @@ public class TransactionStoreTest {
             e.printStackTrace();
         }
 
-        assertEquals("Store did not return the correct amount for the first transaction", BigDecimal.valueOf(7.45), transactionStore.getAmountById(1L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the second transaction", BigDecimal.valueOf(5.116), transactionStore.getAmountById(2L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the third transaction", BigDecimal.valueOf(-2.5), transactionStore.getAmountById(3L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the fourth transaction", BigDecimal.valueOf(4.5), transactionStore.getAmountById(4L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the first transaction", BigDecimal.valueOf(7.45), transactionStore.getAmountByTransactionId(1L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the second transaction", BigDecimal.valueOf(5.116), transactionStore.getAmountByTransactionId(2L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the third transaction", BigDecimal.valueOf(-2.5), transactionStore.getAmountByTransactionId(3L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the fourth transaction", BigDecimal.valueOf(4.5), transactionStore.getAmountByTransactionId(4L).stripTrailingZeros());
     }
 
     @Test
@@ -255,10 +255,10 @@ public class TransactionStoreTest {
             throw e;
         }
         executorService.shutdown();
-        assertEquals("Store did not return the correct amount for the first transaction", BigDecimal.valueOf(5.116 * numberOfThreads + 7.45), transactionStore.getAmountById(1L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the second transaction", BigDecimal.valueOf(2 * numberOfThreads + 5.116), transactionStore.getAmountById(2L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the third transaction", BigDecimal.valueOf(-2.5), transactionStore.getAmountById(3L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the fourth transaction", BigDecimal.valueOf(4.5), transactionStore.getAmountById(4L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the first transaction", BigDecimal.valueOf(5.116 * numberOfThreads + 7.45), transactionStore.getAmountByTransactionId(1L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the second transaction", BigDecimal.valueOf(2 * numberOfThreads + 5.116), transactionStore.getAmountByTransactionId(2L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the third transaction", BigDecimal.valueOf(-2.5), transactionStore.getAmountByTransactionId(3L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the fourth transaction", BigDecimal.valueOf(4.5), transactionStore.getAmountByTransactionId(4L).stripTrailingZeros());
 
     }
 
@@ -291,10 +291,10 @@ public class TransactionStoreTest {
             throw e;
         }
 
-        assertEquals("Store did not return the correct amount for the first transaction", BigDecimal.valueOf(5.116 * numberOfTransactions + 7.45), transactionStore.getAmountById(1L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the second transaction", BigDecimal.valueOf(5.116 * numberOfTransactions + 5.116), transactionStore.getAmountById(2L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the third transaction", BigDecimal.valueOf(-2.5), transactionStore.getAmountById(3L).stripTrailingZeros());
-        assertEquals("Store did not return the correct amount for the fourth transaction", BigDecimal.valueOf(5.116 * numberOfTransactions + 4.5), transactionStore.getAmountById(4L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the first transaction", BigDecimal.valueOf(5.116 * numberOfTransactions + 7.45), transactionStore.getAmountByTransactionId(1L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the second transaction", BigDecimal.valueOf(5.116 * numberOfTransactions + 5.116), transactionStore.getAmountByTransactionId(2L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the third transaction", BigDecimal.valueOf(-2.5), transactionStore.getAmountByTransactionId(3L).stripTrailingZeros());
+        assertEquals("Store did not return the correct amount for the fourth transaction", BigDecimal.valueOf(5.116 * numberOfTransactions + 4.5), transactionStore.getAmountByTransactionId(4L).stripTrailingZeros());
 
     }
 

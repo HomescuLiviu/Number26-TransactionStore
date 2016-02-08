@@ -3,7 +3,6 @@ package com.number26.servlets;
 import com.google.common.base.Splitter;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.number26.storage.Transaction;
 import com.number26.storage.TransactionStore;
 
 import javax.json.JsonObject;
@@ -12,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import static javax.json.Json.createObjectBuilder;
@@ -43,10 +43,10 @@ public class TransactionAmountServlet extends TransactionServletBase {
 
     private JsonObjectBuilder getTransactionSumAsJson(JsonObjectBuilder resultJsonBuilder, String transactionIdString, HttpServletResponse resp) {
         try {
-            Transaction result = transactionStore.getTransactionById(Long.valueOf(transactionIdString));
+            BigDecimal result = transactionStore.getAmountByTransactionId(Long.valueOf(transactionIdString));
             if (result != null) {
                 resultJsonBuilder = resultJsonBuilder
-                        .add("sum", result.getTotalAmount());
+                        .add("sum", result);
             }
         } catch (IllegalArgumentException iae){
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

@@ -82,7 +82,7 @@ public class TransactionStore {
         }
     }
 
-    public BigDecimal getAmountById(Long id) {
+    public BigDecimal getAmountByTransactionId(Long id) {
        if (store.get(id) == null) throw new IllegalArgumentException(String.format("Transaction with id : {%s} does not exist", id));
           return  store.get(id).getTotalAmount();
     }
